@@ -6,36 +6,36 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from fastapi import FastAPI
 
-# Load the datasets
+# Загрузка данных
 train_data = pd.read_csv("credit_train.csv")
 test_data = pd.read_csv("credit_test.csv")
 
-# Separate features and target
+# Отдельные функции и цель
 X_train = train_data.drop("open_account_flg", axis=1)
 y_train = train_data["open_account_flg"]
 
-# Handle missing values in numerical data
+# Обработка пропущенных значений в числовых данных
 imputer = SimpleImputer(strategy="mean")
 X_train_num = X_train.select_dtypes(include=["float64", "int64"])
 X_train_num = imputer.fit_transform(X_train_num)
 
-# Handle missing values in categorical data
+# Обработка пропущенных значений в категориальных данных
 imputer_cat = SimpleImputer(strategy="most_frequent")
 X_train_cat = X_train.select_dtypes(include=["object"])
 X_train_cat = imputer_cat.fit_transform(X_train_cat)
 
-# Convert categorical data to numerical data using one-hot encoding
+# Преобразуйте категориальные данные в числовые данные, используя однократное кодирование
 encoder = OneHotEncoder()
 X_train_cat = encoder.fit_transform(X_train_cat)
 
-# Combine numerical and categorical data
+# Объедините числовые и категориальные данные
 X_train = np.concatenate((X_train_num, X_train_cat.toarray()), axis=1)
 
-# Train a logistic regression model
+# Обучить модель логистической регрессии
 clf = LogisticRegression()
 clf.fit(X_train, y_train)
 
-# Evaluate the model on the validation data
+# Оцените модель на данных проверки
 y_pred = clf.predict(X_train)
 accuracy = accuracy_score(y_train, y_pred)
 precision = precision_score(y_train, y_pred)
@@ -47,7 +47,7 @@ print("Precision:", precision)
 print("Recall:", recall)
 print("F1 score:", f1)
 
-# Handle missing values in test data
+# Обработка пропущенных значений в тестовых данных
 X_test = test_data.drop("open_account_flg", axis=1)
 y_test = test_data["open_account_flg"]
 
